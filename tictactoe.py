@@ -23,16 +23,10 @@ def player(board):
     """
     Returns player who has the next turn on a board.
     """
-    x_count = 0
-    o_count = 0
+    # x_count = 0
+    # o_count = 0
     x_count = sum(i.count('X') for i in board)
     o_count = sum(i.count('O') for i in board)
-    # for i in range(SIZE):
-    #     for j in range(SIZE):
-    #         if board[i][j] == X:
-    #             x_count += 1
-    #         if board[i][j] == O:
-    #             o_count += 1
     if x_count == o_count:
         return X
     else:
@@ -43,24 +37,32 @@ def actions(board):
     Returns set of all possible actions (i, j) available on the board.
     """
     actions = set()
-    actions = [(i,j) for i in range(SIZE) for j in range(SIZE) if board[i][j] == EMPTY]
-    # for i in range(SIZE):
-    #     for j in range(SIZE):
-    #         if board[i][j] == EMPTY:
-    #             actions.add((i,j))
-    # print(actions)
+    # actions = [(i,j) for i in range(SIZE) for j in range(SIZE) if board[i][j] == EMPTY]
+    for i in range(SIZE):
+        for j in range(SIZE):
+            if board[i][j] == EMPTY:
+                actions.add((i,j))
+    print(actions)
     return actions
 
 def result(board, action):
     """
     Returns the board that results from making move (i, j) on the board.
     """
-    i, j = action #tuple
-    # move = 
+    # i, j = action #tuple
+    # board_copy = copy.deepcopy(board)
+    # # to not modify the original board
+    # if board[i][j] == EMPTY:
+    #     board_copy[i][j] = player(board)
+    #     return board_copy
+    # else:
+    #     raise Exception("Move not possible.")
+
+    i, j = action
+    move = player(board)
     board_copy = copy.deepcopy(board)
-    # to not modify the original board
     if board[i][j] == EMPTY:
-        board_copy[i][j] = player(board)
+        board_copy[i][j] = move
         return board_copy
     else:
         raise Exception("Move not possible.")
@@ -108,8 +110,8 @@ def terminal(board):
     """
     if winner(board) == X or winner(board) == O:
         return True
-    for row in SIZE:
-        for col in SIZE:
+    for row in range(SIZE):
+        for col in range(SIZE):
             if board[row][col] == EMPTY:
                 return False
     return True
@@ -132,7 +134,7 @@ def minimax(board):
     """
     def max_value(state):
         if terminal(state):
-            return utility(state)
+            return utility(state), None
         v = -float("inf")
         for action in actions(state):
             new_v = min_value(result(state, action))[0]
@@ -143,7 +145,7 @@ def minimax(board):
 
     def min_value(state):
         if terminal(state):
-            return utility(state)
+            return utility(state), None
         v = float("inf")
         for action in actions(state):
             new_v = max_value(result(state, action))[0]
@@ -153,6 +155,6 @@ def minimax(board):
         return v, min_action 
 
     if player(board) == X:
-        return max_value(board)
+        return max_value(board)[1]
     else:
-        return min_value(board)
+        return min_value(board)[1]
